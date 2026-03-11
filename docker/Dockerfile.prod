@@ -1,0 +1,25 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/dist ./dist
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY .env ./
+
+RUN npm ci
+
+EXPOSE 50051
+
+COPY ./docker/run.prod.sh /app/docker/run.prod.sh
+CMD ["/bin/sh", "-c", "/app/docker/run.prod.sh"]

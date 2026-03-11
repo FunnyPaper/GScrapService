@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+import "google/protobuf/struct.proto";
+
+package worker;
+
+message StartJobRequest {
+    string jobId = 1;
+    google.protobuf.Struct script = 2;
+    google.protobuf.Struct env = 3;
+}
+
+message CancelJobRequest {
+    string jobId = 1;
+}
+
+message CancelJobResponse {
+    bool success = 1;
+}
+
+enum JobEventType {
+    DUMMY = 0;
+    STATUS_CHANGE = 1;
+    RESULT_UPDATE = 2;
+    LOG = 3;
+}
+
+enum JobStatus {
+    UNKNOWN = 0;
+    STARTED = 1;
+    RUNNING = 2;
+    COMPLETED = 3;
+    CANCELLED = 4;
+    FAILED = 5;
+}
+
+enum LogType {
+    INFO = 0;
+    WARN = 1;
+    ERROR = 2;
+}
+
+message LogEvent {
+    LogType type = 1;
+    string message = 2;
+}
+
+message JobEvent {
+    string jobId = 1;
+    JobEventType type = 2;
+    oneof event {
+        JobStatus status = 3;
+        LogEvent log = 4;
+        StatusEvent payload = 5;
+    }
+}
+
+enum StatusType {
+    PARTIAL = 0;
+    FULL = 1;
+}
+
+message StatusEvent {
+    StatusType type = 1;
+    google.protobuf.Struct data = 2;
+}
+
+service WorkerService {
+    rpc StartJob (StartJobRequest) returns (stream JobEvent);
+    rpc CancelJob (CancelJobRequest) returns (CancelJobResponse);
+}

@@ -1,0 +1,3 @@
+[submodule "packages/gscrap"]
+	path = packages/gscrap
+	url = https://github.com/FunnyPaper/GScrap
