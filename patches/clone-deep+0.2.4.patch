@@ -1,0 +1,32 @@
+diff --git a/node_modules/clone-deep/utils.js b/node_modules/clone-deep/utils.js
+index d2a7570..8d798ce 100644
+--- a/node_modules/clone-deep/utils.js
++++ b/node_modules/clone-deep/utils.js
+@@ -1,21 +1,11 @@
+ 'use strict';
+ 
+-/**
+- * Lazily required module dependencies
+- */
+-
+-var utils = require('lazy-cache')(require);
+-var fn = require;
+-
+-require = utils;
+-require('is-plain-object', 'isObject');
+-require('shallow-clone', 'clone');
+-require('kind-of', 'typeOf');
+-require('for-own');
+-require = fn;
+-
+ /**
+  * Expose `utils`
+  */
+-
+-module.exports = utils;
++module.exports = {
++  isObject: require('is-plain-object'),
++  clone: require('shallow-clone'),
++  typeOf: require('kind-of'),
++  forOwn: require('for-own')
++};

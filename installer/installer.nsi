@@ -1,0 +1,78 @@
+# NSIS installer script for GScrap Service
+# This script creates a Windows installer for the GScrap Service application
+ 
+!include "FileFunc.nsh"
+!include "LogicLib.nsh"
+!include "StrFunc.nsh"
+ 
+# --------------------------------
+# Configuration
+ 
+Name "GScrap Service Application"
+OutFile "gscrap-service-installer.exe"
+RequestExecutionLevel admin
+InstallDir "$PROGRAMFILES\GScrap Service"
+InstallDirRegKey HKCU "Software\GScrap Service" "Install_Dir"
+ShowInstDetails show
+ShowUninstDetails show
+ 
+# --------------------------------
+# Pages
+ 
+Page directory
+Page instfiles
+ 
+UninstPage uninstConfirm
+UninstPage instfiles
+ 
+# --------------------------------
+# Registry entries
+ 
+Section
+  SectionIn 1
+ 
+  # Create installation directory
+  CreateDirectory $INSTDIR
+ 
+  # Install files
+  SetOutPath $INSTDIR
+  File /r "..\build\*"
+ 
+  # Create desktop shortcut
+  CreateShortcut "$DESKTOP\GScrap Service.lnk" "$INSTDIR\gscrap-service.exe" "" "$INSTDIR\gscrap-service.exe" 0 SW_SHOWNORMAL "" "GScrap Service Application"
+ 
+  # Create start menu shortcut
+  CreateDirectory "$SMPROGRAMS\GScrap Service"
+  CreateShortcut "$SMPROGRAMS\GScrap Service\GScrap Service.lnk" "$INSTDIR\gscrap-service.exe" "" "$INSTDIR\gscrap-service.exe" 0 SW_SHOWNORMAL "" "GScrap Service Application"
+  CreateShortcut "$SMPROGRAMS\GScrap Service\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0 SW_SHOWNORMAL "" "Uninstall GScrap Service Application"
+ 
+  # Write registry information
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GScrap Service" "InstallLocation" "$INSTDIR"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GScrap Service" "DisplayName" "GScrap Service Application"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GScrap Service" "DisplayVersion" "0.1.0"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GScrap Service" "Publisher" "FunnyPaper"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\GScrap Service" "UninstallString" "$INSTDIR\uninstall.exe"
+ 
+  # Create uninstaller
+  WriteUninstaller "$INSTDIR\uninstall.exe"
+ 
+SectionEnd
+ 
+# --------------------------------
+# Uninstaller Section
+ 
+Section "Uninstall"
+  # Remove files
+  RMDir /r "$INSTDIR"
+  RMDir "$INSTDIR"
+ 
+  # Remove desktop shortcut
+  Delete "$DESKTOP\GScrap Service.lnk"
+ 
+  # Remove start menu shortcuts
+  RMDir "$SMPROGRAMS\GScrap Service"
+ 
+  # Remove registry information
+  DeleteRegKey HKLM "Software\GScrap Service"
+ 
+SectionEnd

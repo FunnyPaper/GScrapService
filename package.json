@@ -18,13 +18,17 @@
         "gen:proto": "npx buf generate",
         "start:debug": "node --inspect=${DEBUG_PORT:-9230} -r ts-node/register src/server.ts",
         "build": "tsc",
-        "start:prod": "node dist/server.js",
+        "build:ncc": "ncc build src/server.ts -o dist --source-map --minify",
+        "build:windows:x64": "nexe dist/index.js --target windows-x64 --output gscrap-service.exe --build --verbose",
+        "build:windows:nsis": "makensis installer/installer.nsi",
+        "start:prod": "node dist/src/server.js",
         "start:dev": "ts-node src/server.ts",
         "docker:start": "npm run docker:down && docker compose --profile $DPROFILE build && docker compose --profile $DPROFILE up -d",
         "docker:down": "docker compose -f docker-compose.yml --env-file .env --profile \"*\" down --remove-orphans",
         "docker:prod": "DPROFILE=production npm run docker:start",
         "docker:dev": "DPROFILE=development npm run docker:start",
-        "docker:debug": "DPROFILE=debug npm run docker:start"
+        "docker:debug": "DPROFILE=debug npm run docker:start",
+        "postinstall": "npm run gen:proto"
     },
     "dependencies": {
         "@bufbuild/protobuf": "2.10.x",
@@ -36,6 +40,9 @@
     "devDependencies": {
         "@bufbuild/buf": "1.62.x",
         "@types/jsonwebtoken": "9.0.x",
+        "@vercel/ncc": "^0.38.4",
+        "nexe": "^5.0.0-beta.4",
+        "patch-package": "^8.0.1",
         "ts-node": "10.9.x",
         "ts-proto": "2.10.x",
         "typescript": "5.9.x"
