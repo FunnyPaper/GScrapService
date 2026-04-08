@@ -124,4 +124,8 @@ export class JobManager {
         return false;
     }
   }
+
+  getScriptValidationSchema(version: string) {
+    return GScrapConfigScheme.toJSONSchema();
+  }
 }

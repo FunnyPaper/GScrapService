@@ -19,7 +19,7 @@ export function authInterceptor(secret: string) {
         const serverListener = new ServerListenerBuilder()
           .withOnReceiveMetadata((metadata: Metadata, next: (metadata: Metadata) => void) => {
             try {
-              const authHeader = metadata.get('authorization')[0] as string | undefined;
+              const authHeader = metadata.get('authorization')[0] as string;
 
               if (!authHeader?.startsWith('Bearer ')) {
                 call.sendStatus({
@@ -32,7 +32,8 @@ export function authInterceptor(secret: string) {
               const token = authHeader.slice(7);
               const payload = jwt.verify(token, secret);
 
-              (call as any).auth = payload;
+              const scope = (payload as jwt.JwtPayload).scope as string[] || [];
+              scope.forEach(s => metadata.set('scope', s));
             } catch(err) {
               call.sendStatus({
                 code: status.UNAUTHENTICATED,

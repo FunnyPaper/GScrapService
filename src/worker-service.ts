@@ -1,15 +1,41 @@
 import { ServerWritableStream, sendUnaryData, ServerUnaryCall } from "@grpc/grpc-js";
 import { JobManager } from "./job-manager";
-import { CancelJobRequest, CancelJobResponse, JobEvent, StartJobRequest, WorkerServiceServer } from "./proto/worker";
+import { CancelJobRequest, CancelJobResponse, GetScriptValidationSchemaRequest, JobEvent, StartJobRequest, WorkerServiceServer } from "./proto/worker";
+import { requireScope } from "./guard";
 
 const jobManager = new JobManager();
 
 export const workerService: WorkerServiceServer = {
   startJob(call: ServerWritableStream<StartJobRequest, JobEvent>) {
-    jobManager.startJob(call.request.jobId, call.request.script, call.request.env, call);
+    const access = requireScope(['run:start'], call);
+
+    if (access.granted) {
+        jobManager.startJob(call.request.jobId, call.request.script, call.request.env, call);
+    } else {
+        call.emit('error', {
+            code: access.code,
+            message: access.message
+        })
+    }
   },
   async cancelJob(call: ServerUnaryCall<CancelJobRequest, CancelJobResponse>, callback: sendUnaryData<CancelJobResponse>) {
-    const success = await jobManager.cancelJob(call.request.jobId);
-    callback(null, { success });
+    const access = requireScope(['run:cancel'], call);
+    
+    if (access.granted) {
+        const success = await jobManager.cancelJob(call.request.jobId);
+        callback(null, { success });
+    } else {
+        callback({ code: access.code, message: access.message });
+    }
+  },
+  getScriptValidationSchema(call: ServerUnaryCall<GetScriptValidationSchemaRequest, Record<string, any>>, callback: sendUnaryData<Record<string, any>>) {
+    const access = requireScope(['script:validate'], call);
+
+    if (access.granted) {
+        const schema = jobManager.getScriptValidationSchema(call.request.version);
+        callback(null, schema);
+    } else {
+        callback({ code: access.code, message: access.message });
+    }
   }
 };

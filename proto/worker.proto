@@ -65,7 +65,12 @@ message StatusEvent {
     google.protobuf.Struct data = 2;
 }
 
+message GetScriptValidationSchemaRequest {
+    string version = 1;
+}
+
 service WorkerService {
     rpc StartJob (StartJobRequest) returns (stream JobEvent);
     rpc CancelJob (CancelJobRequest) returns (CancelJobResponse);
+    rpc GetScriptValidationSchema (GetScriptValidationSchemaRequest) returns (google.protobuf.Struct);
 }
