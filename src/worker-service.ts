@@ -6,36 +6,36 @@ import { requireScope } from "./guard";
 const jobManager = new JobManager();
 
 export const workerService: WorkerServiceServer = {
-  startJob(call: ServerWritableStream<StartJobRequest, JobEvent>) {
-    const access = requireScope(['run:start'], call);
+    startJob(call: ServerWritableStream<StartJobRequest, JobEvent>) {
+        const access = requireScope(['run:start'], call);
 
-    if (access.granted) {
-        jobManager.startJob(call.request.jobId, call.request.script, call.request.env, call);
-    } else {
-        call.emit('error', {
-            code: access.code,
-            message: access.message
-        })
-    }
-  },
-  async cancelJob(call: ServerUnaryCall<CancelJobRequest, CancelJobResponse>, callback: sendUnaryData<CancelJobResponse>) {
-    const access = requireScope(['run:cancel'], call);
-    
-    if (access.granted) {
-        const success = await jobManager.cancelJob(call.request.jobId);
-        callback(null, { success });
-    } else {
-        callback({ code: access.code, message: access.message });
-    }
-  },
-  getScriptValidationSchema(call: ServerUnaryCall<GetScriptValidationSchemaRequest, Record<string, any>>, callback: sendUnaryData<Record<string, any>>) {
-    const access = requireScope(['script:validate'], call);
+        if (access.granted) {
+            jobManager.startJob(call.request.jobId, call.request.script, call.request.env, call);
+        } else {
+            call.emit('error', {
+                code: access.code,
+                message: access.message
+            })
+        }
+    },
+    async cancelJob(call: ServerUnaryCall<CancelJobRequest, CancelJobResponse>, callback: sendUnaryData<CancelJobResponse>) {
+        const access = requireScope(['run:cancel'], call);
 
-    if (access.granted) {
-        const schema = jobManager.getScriptValidationSchema(call.request.version);
-        callback(null, schema);
-    } else {
-        callback({ code: access.code, message: access.message });
+        if (access.granted) {
+            const success = await jobManager.cancelJob(call.request.jobId);
+            callback(null, { success });
+        } else {
+            callback({ code: access.code, message: access.message });
+        }
+    },
+    getScriptValidationSchema(call: ServerUnaryCall<GetScriptValidationSchemaRequest, Record<string, any>>, callback: sendUnaryData<Record<string, any>>) {
+        const access = requireScope(['script:validate'], call);
+
+        if (access.granted) {
+            const schema = jobManager.getScriptValidationSchema(call.request.version);
+            callback(null, schema);
+        } else {
+            callback({ code: access.code, message: access.message });
+        }
     }
-  }
 };

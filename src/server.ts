@@ -7,16 +7,16 @@ import { config } from 'dotenv';
 config()
 
 const server = new grpc.Server({
-  interceptors: [authInterceptor(process.env.GRPC_JWT_SECRET!)],
+    interceptors: [authInterceptor(process.env.GRPC_JWT_SECRET!)],
 });
 server.addService(WorkerServiceService, workerService);
 
-server.bindAsync(`0.0.0.0:${process.env.NODE_PORT}`, grpc.ServerCredentials.createInsecure(), (err, port) => {
+server.bindAsync(`${process.env.ALLOW}:${process.env.NODE_PORT}`, grpc.ServerCredentials.createInsecure(), (err, port) => {
     if (err) throw err;
     console.log(`gRPC server running on port ${port}`)
 })
 
 process.on("SIGINT", () => {
-  console.log("Shutting down...");
-  server.tryShutdown(() => process.exit(0));
+    console.log("Shutting down...");
+    server.tryShutdown(() => process.exit(0));
 });

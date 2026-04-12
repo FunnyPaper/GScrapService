@@ -7,8 +7,8 @@ export function requireScope(scope: string[], call: ServerUnaryCall<unknown, unk
 
     return granted
         ? { granted }
-        : { 
-            granted, 
+        : {
+            granted,
             code: grpc.status.PERMISSION_DENIED,
             message: 'Scope not met'
         };

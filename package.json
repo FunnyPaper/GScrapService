@@ -1,6 +1,6 @@
 {
     "name": "@gscrap/service",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "private": true,
     "description": "",
     "author": "",
@@ -18,7 +18,7 @@
         "gen:proto": "npx buf generate",
         "start:debug": "node --inspect=${DEBUG_PORT:-9230} -r ts-node/register src/server.ts",
         "build": "tsc",
-        "build:ncc": "ncc build src/server.ts -o dist --source-map --minify",
+        "build:ncc": "ncc build src/server-app.ts -o dist --source-map --minify",
         "build:windows:x64": "nexe dist/index.js --target windows-x64 --output gscrap-service.exe --build --verbose",
         "build:windows:nsis": "makensis installer/installer.nsi",
         "start:prod": "node dist/src/server.js",
@@ -35,11 +35,13 @@
         "@grpc/grpc-js": "1.14.x",
         "@gscrap/core": "workspace:*",
         "dotenv": "17.2.x",
-        "jsonwebtoken": "9.0.x"
+        "jsonwebtoken": "9.0.x",
+        "yargs": "^18.0.0"
     },
     "devDependencies": {
         "@bufbuild/buf": "1.62.x",
         "@types/jsonwebtoken": "9.0.x",
+        "@types/yargs": "^17.0.35",
         "@vercel/ncc": "^0.38.4",
         "nexe": "^5.0.0-beta.4",
         "patch-package": "^8.0.1",
