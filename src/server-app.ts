@@ -6,6 +6,7 @@ import { config } from 'dotenv';
 import { resolve } from 'path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import net from 'net';
 
 async function main() {
     const argv = yargs(hideBin(process.argv))
@@ -34,6 +35,21 @@ async function main() {
             default: process.env.GRPC_JWT_SECRET,
             description: "Secret used for checking short lived tokens."
         })
+        .option("ack", {
+            type: "boolean",
+            default: false,
+            description: "Should the service send a tcp ping once started."
+        })
+        .option("ack-host", {
+            type: "string",
+            default: "127.0.0.1",
+            description: "Host address to send ack ping to. Ignored if [ack] is set to false."
+        })
+        .option("ack-port", {
+            type: "number",
+            default: 9908,
+            description: "Port number to send ack ping to. Ignored if [ack] is set to false."
+        })
         .argv;
 
     config({ path: resolve(argv.cwd ?? process.cwd(), '.env') })
@@ -51,7 +67,21 @@ async function main() {
 
     server.bindAsync(`${options.allow}:${options.nodePort}`, grpc.ServerCredentials.createInsecure(), (err, port) => {
         if (err) throw err;
-        console.log(`gRPC server running on port ${port}`)
+        console.log(`gRPC server running on port ${port}`);
+
+        // If ack is set then sends port informations through socket connection
+        if (argv.ack) {
+            const ackPort = argv['ack-port'];
+            const ackHost = argv['ack-host'];
+
+            const client = net.createConnection(
+                { port: ackPort, host: ackHost },
+                () => {
+                    client.write(`PORT=${port}`);
+                    client.end();
+                }
+            )
+        }
     })
 
     process.on("SIGINT", () => {
