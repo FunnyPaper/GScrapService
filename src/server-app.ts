@@ -8,7 +8,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 async function main() {
-    const argv = await yargs(hideBin(process.argv))
+    const argv = yargs(hideBin(process.argv))
         .scriptName("gscrap-service")
         .version("0.1.0")
         .alias("v", "version")
