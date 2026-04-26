@@ -43,8 +43,8 @@ export class JobManager {
             return;
         }
 
-        if (env && varsLeft(script)) {
-            updateVars(script, env);
+        if (varsLeft(script)) {
+            updateVars(script, env ?? {});
         }
 
         const validateConfig = GScrapConfigScheme.safeParse(script);

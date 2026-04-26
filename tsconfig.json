@@ -11,6 +11,6 @@
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["./src"],
+  "include": ["./src", "packages/gscrap/packages/core/src/global.d.ts"],
   "exclude": ["./packages", "./dist", "./node_modules"]
 }
