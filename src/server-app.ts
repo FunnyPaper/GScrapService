@@ -1,12 +1,14 @@
+import './fs-patches';
 import * as grpc from '@grpc/grpc-js';
 import { authInterceptor } from './auth-interceptor';
 import { WorkerServiceService } from './proto/worker';
 import { workerService } from './worker-service';
 import { config } from 'dotenv';
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import net from 'net';
+import os from 'os';
 
 async function main() {
     const argv = yargs(hideBin(process.argv))
@@ -19,6 +21,18 @@ async function main() {
             type: "string",
             default: process.cwd(),
             description: "Path to current working directory. Used for resolving additional files."
+        })
+        .option("app-dir", {
+            type: 'string',
+            default: join(
+                process.env.LOCALAPPDATA || (
+                    process.platform == 'darwin' ? join(os.homedir(), "Library", "Application Support") :
+                    process.platform == 'linux' ? join(os.homedir(), '.config') :
+                    os.homedir()
+                ),
+                "lam-gscrap-service"
+            ),
+            description: 'Path used to save data into.'
         })
         .option("allow", {
             type: "string",
@@ -63,7 +77,8 @@ async function main() {
     const server = new grpc.Server({
         interceptors: [authInterceptor(options.grpcTokenSecret!)],
     });
-    server.addService(WorkerServiceService, workerService);
+    
+    server.addService(WorkerServiceService, workerService(argv['app-dir']));
 
     server.bindAsync(`${options.allow}:${options.nodePort}`, grpc.ServerCredentials.createInsecure(), (err, port) => {
         if (err) throw err;

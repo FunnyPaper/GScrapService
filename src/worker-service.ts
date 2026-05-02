@@ -3,9 +3,11 @@ import { JobManager } from "./job-manager";
 import { CancelJobRequest, CancelJobResponse, GetScriptValidationSchemaRequest, JobEvent, StartJobRequest, WorkerServiceServer } from "./proto/worker";
 import { requireScope } from "./guard";
 
-const jobManager = new JobManager();
+export type WorkerServiceProvider = (appDir: string) => WorkerServiceServer;
 
-export const workerService: WorkerServiceServer = {
+export const workerService: WorkerServiceProvider = (appDir: string) => {
+    const jobManager = new JobManager(appDir);
+    return {
     startJob(call: ServerWritableStream<StartJobRequest, JobEvent>) {
         const access = requireScope(['run:start'], call);
 
@@ -38,4 +40,4 @@ export const workerService: WorkerServiceServer = {
             callback({ code: access.code, message: access.message });
         }
     }
-};
+}};

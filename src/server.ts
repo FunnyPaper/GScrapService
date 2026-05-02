@@ -9,7 +9,7 @@ config()
 const server = new grpc.Server({
     interceptors: [authInterceptor(process.env.GRPC_JWT_SECRET!)],
 });
-server.addService(WorkerServiceService, workerService);
+server.addService(WorkerServiceService, workerService(process.cwd()));
 
 server.bindAsync(`${process.env.ALLOW}:${process.env.NODE_PORT}`, grpc.ServerCredentials.createInsecure(), (err, port) => {
     if (err) throw err;

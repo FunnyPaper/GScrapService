@@ -7,7 +7,7 @@ const statusMapper = {
     [GScrapRunnerStatuses.COMPLETED]: JobStatus.COMPLETED,
     [GScrapRunnerStatuses.FAILED]: JobStatus.FAILED,
     [GScrapRunnerStatuses.STARTED]: JobStatus.STARTED,
-    [GScrapRunnerStatuses.UNKNOWN]: JobStatus.UNKNOWN
+    [GScrapRunnerStatuses.UNKNOWN]: JobStatus.UNKNOWN_JOB_STATUS
 }
 
 const logTypeMapper = {
@@ -18,6 +18,8 @@ const logTypeMapper = {
 
 export class JobManager {
     private runners: Map<string, GScrapRunner> = new Map();
+
+    public constructor(private appDir: string) { }
 
     async startJob(
         jobId: string,
@@ -67,7 +69,7 @@ export class JobManager {
             return;
         }
 
-        const runner = new GScrapRunner(validateConfig.data, jobId);
+        const runner = new GScrapRunner(validateConfig.data, jobId, this.appDir);
 
         runner.on('log', ({ type, message }) => {
             stream.write({
@@ -86,7 +88,7 @@ export class JobManager {
                 type: JobEventType.RESULT_UPDATE,
                 payload: {
                     type: StatusType.PARTIAL,
-                    data
+                    data: [data]
                 }
             });
         });

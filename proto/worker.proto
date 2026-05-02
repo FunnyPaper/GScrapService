@@ -19,25 +19,27 @@ message CancelJobResponse {
 }
 
 enum JobEventType {
-    DUMMY = 0;
+    UNKNOWN_JOB_EVENT_TYPE = 0;
     STATUS_CHANGE = 1;
     RESULT_UPDATE = 2;
     LOG = 3;
 }
 
 enum JobStatus {
-    UNKNOWN = 0;
+    UNKNOWN_JOB_STATUS = 0;
     STARTED = 1;
     RUNNING = 2;
     COMPLETED = 3;
     CANCELLED = 4;
     FAILED = 5;
+    CANCELLING = 6;
 }
 
 enum LogType {
-    INFO = 0;
-    WARN = 1;
-    ERROR = 2;
+    UNKNOWN_LOG_TYPE = 0;
+    INFO = 1;
+    WARN = 2;
+    ERROR = 3;
 }
 
 message LogEvent {
@@ -56,13 +58,14 @@ message JobEvent {
 }
 
 enum StatusType {
-    PARTIAL = 0;
-    FULL = 1;
+    UNKNOWN_STATUS = 0;
+    PARTIAL = 1;
+    FULL = 2;
 }
 
 message StatusEvent {
     StatusType type = 1;
-    google.protobuf.Struct data = 2;
+    repeated google.protobuf.Struct data = 2;
 }
 
 message GetScriptValidationSchemaRequest {
