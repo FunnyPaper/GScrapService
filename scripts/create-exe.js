@@ -18,7 +18,7 @@ run('npm run build:windows:x64');
 console.log('Organizing build directory...');
 fs.mkdirSync('build', { recursive: true });
 
-const simpleFiles = ['gscrap-service.exe', '.env'];
+const simpleFiles = ['gscrap-service.exe'];
 simpleFiles.forEach(f => {
     if (fs.existsSync(f)) fs.cpSync(f, path.join('build', f));
 });
