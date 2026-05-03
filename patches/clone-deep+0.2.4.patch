@@ -1,7 +1,7 @@
-diff --git a/node_modules/merge-deep/node_modules/clone-deep/utils.js b/node_modules/merge-deep/node_modules/clone-deep/utils.js
+diff --git a/node_modules/clone-deep/utils.js b/node_modules/clone-deep/utils.js
 index d2a7570..8d798ce 100644
---- a/node_modules/merge-deep/node_modules/clone-deep/utils.js
-+++ b/node_modules/merge-deep/node_modules/clone-deep/utils.js
+--- a/node_modules/clone-deep/utils.js
++++ b/node_modules/clone-deep/utils.js
 @@ -1,21 +1,11 @@
  'use strict';
  
