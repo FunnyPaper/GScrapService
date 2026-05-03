@@ -3,10 +3,10 @@ import { JobManager } from "./job-manager";
 import { CancelJobRequest, CancelJobResponse, GetScriptValidationSchemaRequest, JobEvent, StartJobRequest, WorkerServiceServer } from "./proto/worker";
 import { requireScope } from "./guard";
 
-export type WorkerServiceProvider = (appDir: string) => WorkerServiceServer;
+export type WorkerServiceProvider = (appDir: string, globalOptions?: { cacheDir?: string, headless?: boolean }) => WorkerServiceServer;
 
-export const workerService: WorkerServiceProvider = (appDir: string) => {
-    const jobManager = new JobManager(appDir);
+export const workerService: WorkerServiceProvider = (appDir, globalOptions) => {
+    const jobManager = new JobManager(appDir, globalOptions);
     return {
     startJob(call: ServerWritableStream<StartJobRequest, JobEvent>) {
         const access = requireScope(['run:start'], call);

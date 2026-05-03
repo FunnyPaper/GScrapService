@@ -64,6 +64,10 @@ async function main() {
             default: 9908,
             description: "Port number to send ack ping to. Ignored if [ack] is set to false."
         })
+        .options("cache-dir", {
+            type: "string",
+            description: "Path to webdriver cache"
+        })
         .argv;
 
     config({ path: resolve(argv.cwd ?? process.cwd(), '.env') })
@@ -78,7 +82,10 @@ async function main() {
         interceptors: [authInterceptor(options.grpcTokenSecret!)],
     });
     
-    server.addService(WorkerServiceService, workerService(argv['app-dir']));
+    server.addService(WorkerServiceService, workerService(argv['app-dir'], { 
+      cacheDir: argv['cache-dir'], 
+      headless: process.env.HEADLESS == '1' 
+    }));
 
     server.bindAsync(`${options.allow}:${options.nodePort}`, grpc.ServerCredentials.createInsecure(), (err, port) => {
         if (err) throw err;

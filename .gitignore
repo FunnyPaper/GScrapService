@@ -65,3 +65,4 @@ src/proto
 *.sqlite
 
 package-lock.json
+.cache

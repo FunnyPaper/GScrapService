@@ -23,6 +23,12 @@ simpleFiles.forEach(f => {
     if (fs.existsSync(f)) fs.cpSync(f, path.join('build', f));
 });
 
+const env = `
+HEADLESS=1
+`.trim()
+
+fs.writeFileSync(path.join('build', '.env'), env);
+
 const copyWithFilter = (src, dest, ext) => {
     if (!fs.existsSync(src)) return;
     fs.cpSync(src, path.join(dest, src), {
@@ -36,6 +42,8 @@ const copyWithFilter = (src, dest, ext) => {
 
 copyWithFilter('dist', 'build', '.node');
 copyWithFilter('proto', 'build', '.proto');
+
+fs.cpSync('.cache', 'build/.cache', { recursive: true });
 
 if (fs.existsSync('gscrap-service.exe')) fs.rmSync('gscrap-service.exe');
 console.log('Build completed successfully!');

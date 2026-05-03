@@ -19,7 +19,7 @@ const logTypeMapper = {
 export class JobManager {
     private runners: Map<string, GScrapRunner> = new Map();
 
-    public constructor(private appDir: string) { }
+    public constructor(private appDir: string, private globalOptions?: { cacheDir?: string, headless?: boolean }) { }
 
     async startJob(
         jobId: string,
@@ -69,7 +69,7 @@ export class JobManager {
             return;
         }
 
-        const runner = new GScrapRunner(validateConfig.data, jobId, this.appDir);
+        const runner = new GScrapRunner(validateConfig.data, jobId, this.appDir, this.globalOptions);
 
         runner.on('log', ({ type, message }) => {
             stream.write({
