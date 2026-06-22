@@ -72,6 +72,7 @@ export class JobManager {
         const runner = new GScrapRunner(validateConfig.data, jobId, this.appDir, this.globalOptions);
 
         runner.on('log', ({ type, message }) => {
+            console.log(message);
             stream.write({
                 jobId,
                 type: JobEventType.LOG,
@@ -83,6 +84,7 @@ export class JobManager {
         });
 
         runner.on('resultUpdate', ({ data }) => {
+            console.log(data);
             stream.write({
                 jobId,
                 type: JobEventType.RESULT_UPDATE,
@@ -94,6 +96,7 @@ export class JobManager {
         });
 
         runner.on('statusChange', ({ status }) => {
+            console.log(status);
             stream.write({
                 jobId,
                 type: JobEventType.STATUS_CHANGE,
