@@ -28,7 +28,8 @@
     "docker:prod": "DPROFILE=production npm run docker:start",
     "docker:dev": "DPROFILE=development npm run docker:start",
     "docker:debug": "DPROFILE=debug npm run docker:start",
-    "postinstall": "npm run gen:proto"
+    "postinstall": "npm run gen:proto",
+    "format": "prettier src --write"
   },
   "dependencies": {
     "@grpc/grpc-js": "1.14.x",
@@ -38,13 +39,14 @@
     "yargs": "^16.0.0"
   },
   "devDependencies": {
-    "@bufbuild/protobuf": "2.10.x",
     "@bufbuild/buf": "1.62.x",
+    "@bufbuild/protobuf": "2.10.x",
     "@types/jsonwebtoken": "9.0.x",
     "@types/yargs": "^16.0.0",
     "@vercel/ncc": "^0.38.4",
     "nexe": "^5.0.0-beta.4",
     "patch-package": "^8.0.1",
+    "prettier": "3.8.x",
     "ts-node": "10.9.x",
     "ts-proto": "2.10.x",
     "typescript": "5.9.x"

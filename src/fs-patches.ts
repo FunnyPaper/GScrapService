@@ -5,36 +5,36 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const applyFsPatch = () => {
-    const originalRm = fs.promises.rm;
+  const originalRm = fs.promises.rm;
 
-    const safeRemoveAsync = async (dirPath: string): Promise<void> => {
-        if (!fs.existsSync(dirPath)) return;
-        
-        const entries = fs.readdirSync(dirPath);
-        
-        for (const entry of entries) {
-            const fullPath = path.join(dirPath, entry);
-            if (fs.lstatSync(fullPath).isDirectory()) {
-                await safeRemoveAsync(fullPath);
-            } else {
-                fs.unlinkSync(fullPath);
-            }
-        }
-        fs.rmdirSync(dirPath);
-    };
+  const safeRemoveAsync = async (dirPath: string): Promise<void> => {
+    if (!fs.existsSync(dirPath)) return;
 
-    // @ts-ignore
-    fs.promises.rm = async function (path: string, options?: any) {
-        if (options?.recursive) {
-            try {
-                await safeRemoveAsync(path);
-                return;
-            } catch (err) {
-                return;
-            }
-        }
-        return originalRm.apply(this, arguments as any);
-    };
+    const entries = fs.readdirSync(dirPath);
+
+    for (const entry of entries) {
+      const fullPath = path.join(dirPath, entry);
+      if (fs.lstatSync(fullPath).isDirectory()) {
+        await safeRemoveAsync(fullPath);
+      } else {
+        fs.unlinkSync(fullPath);
+      }
+    }
+    fs.rmdirSync(dirPath);
+  };
+
+  // @ts-ignore
+  fs.promises.rm = async function (path: string, options?: any) {
+    if (options?.recursive) {
+      try {
+        await safeRemoveAsync(path);
+        return;
+      } catch (err) {
+        return;
+      }
+    }
+    return originalRm.apply(this, arguments as any);
+  };
 };
 
 applyFsPatch();
